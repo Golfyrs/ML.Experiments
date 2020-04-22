@@ -3,6 +3,7 @@ from Image import Image
 from PIL import ImageGrab
 import cv2
 import time
+from mss import mss
 
 class ScreenReader:
     def __init__(self):  
@@ -10,6 +11,7 @@ class ScreenReader:
         self.show_once_in = 10
         self.averrage_count = 0
         self.first = 1
+
 
     def Start(self):
         # Reset FPS state
@@ -30,7 +32,16 @@ class ScreenReader:
 
 
     def Screenshot(self):
-        print_screen = Image(numpy.array(ImageGrab.grab(bbox = (60, 0, 1920, 1020))))
+        # Take screenshot via mss
+        with mss() as sct:
+            mon = sct.monitors[1]
+            monitor = {"top": mon["top"], "left": mon["left"] + 60, "width": 1860, "height": 1080}
+            return sct.grab(monitor)
+
+        # Take screenshot via ImageGrab
+        # screen = ImageGrab.grab(bbox = (60, 0, 1920, 1020))
+
+        print_screen = Image(numpy.array(screen))
         print_screen.AsGray()
         print_screen.AsCanny()
   
