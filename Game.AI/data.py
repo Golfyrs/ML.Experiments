@@ -1,12 +1,13 @@
 import numpy
-from PIL import ImageGrab
 import cv2
 import time
+from driver import *
+from PIL import ImageGrab
 from mss import mss
 
-class ScreenReader:
+class DataReader:
     def __init__(self):  
-        self.averrage = 0
+        self.averrage = 0 
         self.show_once_in = 10
         self.averrage_count = 0
         self.first = 1
@@ -23,11 +24,18 @@ class ScreenReader:
         while(True):
             self.screenshot()
 
+            self.press_keyboard(KEY_A)
+
             # Close window when user press `esc`
             k = cv2.waitKey(1)
             if k == 27:
                 cv2.destroyAllWindows()
                 break
+
+
+    def press_keyboard(self, key):
+        SendInput(Keyboard(key))
+        SendInput(Keyboard(key, KEYEVENTF_KEYUP))
 
 
     def screenshot(self):

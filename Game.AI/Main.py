@@ -1,4 +1,4 @@
-from data import ScreenReader
+from data import DataReader
 
-screen_reader = ScreenReader()
+screen_reader = DataReader()
 screen_reader.start()
