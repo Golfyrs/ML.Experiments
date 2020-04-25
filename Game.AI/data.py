@@ -24,7 +24,8 @@ class DataReader:
         while(True):
             self.screenshot()
 
-            self.press_keyboard(KEY_A)
+            # Move to `vehicle_control`
+            # self.press_keyboard(KEY_A)
 
             # Close window when user press `esc`
             k = cv2.waitKey(1)
@@ -48,10 +49,18 @@ class DataReader:
         # Take screenshot via ImageGrab  (averrage FPS = 18)
         # screen = ImageGrab.grab(bbox = (60, 0, 1920, 1020))
 
+
         print_screen = Image(numpy.array(screen))
         print_screen.as_gray()
         print_screen.as_canny()
-  
+
+        print_screen.as_gaussian_blur()
+
+        vertices = numpy.array( [ [ 10, 500 ], [ 10, 300 ], [ 300, 200 ], [ 500, 200 ], [ 800, 300 ], [ 800, 500 ] ] )
+        print_screen.identify_region([vertices])
+
+        print_screen.draw_hough_lines()
+
         # Test
         cv2.imshow('window', print_screen.image)
 
@@ -95,3 +104,24 @@ class Image:
     
     def as_canny(self):
         self.image = cv2.Canny(self.image, threshold1=200, threshold2=300)
+
+    def identify_region(self, vertices):
+        mask = numpy.zeros_like(self.image)
+        cv2.fillPoly(mask, vertices, 255)
+        self.image = cv2.bitwise_and(self.image, mask)
+
+    def as_gaussian_blur(self):
+        self.image = cv2.GaussianBlur(self.image, (5,5), 0)
+
+    def draw_lines(self, image, lines):
+        if lines is None:
+            return
+
+        for line in lines:
+            coords = line[0]
+            cv2.line(image, (coords[0], coords[1]), (coords[2], coords[3]), [255,255,255], 3)
+
+    def draw_hough_lines(self):
+        # Move to method in class Image
+        lines = cv2.HoughLinesP(self.image, 1, numpy.pi/180, 100, None, 100, 5)
+        self.draw_lines(self.image, lines)
